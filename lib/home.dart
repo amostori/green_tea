@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -12,8 +13,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Timer _timer;
-  int baseTime = 120;
-  // final player = AudioCache(prefix: 'assets/sounds/');
+  int baseTime = 180;
   final player = AudioPlayer();
   late double screenWidth;
   late double screenHeight;
@@ -21,7 +21,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   String get timerString {
     Duration? duration =
         _animationController.duration! * _animationController.value;
-    return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
+    return '${duration.inMinutes}:${(duration.inSeconds % 60)
+        .toString()
+        .padLeft(2, '0')}';
   }
 
   void setController(int time) {
@@ -44,9 +46,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    super.initState();
     setController(baseTime);
     startEverything(baseTime);
+    super.initState();
   }
 
   void cancelTimer() {
@@ -65,20 +67,38 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       _animationController.stop();
       _animationController.reset();
       cancelTimer();
-    } else {
       startEverything(time);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    screenHeight = MediaQuery.of(context).size.height;
-    screenWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      body: Stack(
-        children: [
-          buildCountdown2(),
-        ],
+    screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton.large(
+          child: const Icon(Icons.exposure_minus_1),
+          onPressed: () {
+            controlEverything(120);
+            setState(() {
+
+            });
+          },
+        ),
+        body: Stack(
+          children: [
+            buildCountdown2(),
+          ],
+        ),
       ),
     );
   }
